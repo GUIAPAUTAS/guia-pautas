@@ -166,6 +166,11 @@ button, select, input { font: inherit; color: inherit; }
   .btn { transition: border-color .15s ease; }
 }
 
+.vacio { padding: 20px 4px; }
+.vacio h2 { margin: 0 0 6px; font-size: 22px; line-height: 1.25; font-weight: 600; text-wrap: balance; }
+.vacio p { margin: 0; color: var(--muted); max-width: 52ch; }
+.vacio .eyebrow { margin-bottom: 4px; }
+
 .barra { display: none; }
 @media (max-width: 860px) {
   .app { padding-bottom: 88px; }
@@ -713,9 +718,18 @@ document.getElementById('form').addEventListener('submit', function (e) { e.prev
   }
 
   var ejemploActivo = false;
+  function vacio(s) {
+    return IDS.every(function (id) { return id === 'fConsulta' || s[id] === '' || s[id] === null || s[id] === undefined || (typeof s[id] === 'number' && isNaN(s[id])); });
+  }
+  function pintarVacio() {
+    $('pautas').innerHTML = '<div class="vacio"><p class="eyebrow">Pautas</p><h2>Rellena los datos del caso</h2><p>Las pautas y los plazos aparecerán aquí a medida que marques los datos. Si prefieres ver cómo funciona, pulsa «Cargar ejemplo».</p></div>';
+    lastText = '';
+    $('btnCopiar').disabled = true;
+  }
   function render() {
     var s = getState();
     toggleFields(s);
+    if (vacio(s)) { pintarVacio(); $('banner').hidden = true; return; }
     paint(Engine.evaluar(s));
     $('banner').hidden = !ejemploActivo;
   }
@@ -762,7 +776,7 @@ document.getElementById('form').addEventListener('submit', function (e) { e.prev
   $('irDatos').addEventListener('click', function () { $('form').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   $('irPautas').addEventListener('click', function () { $('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 
-  ejemplo();
+  limpiar();
 })();
 
 </script>
