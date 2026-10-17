@@ -1,0 +1,768 @@
+<title>Guía de pautas VioGén-2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Diseño: herramienta de consulta. Formulario a la izquierda, pautas a la derecha; en móvil, una columna.
+   Neutros con ligero tono verdoso, acento azul petróleo, color semántico aparte (ámbar, rojo). */
+:root {
+  --bg: #f3f6f6;
+  --surface: #ffffff;
+  --fg: #1c2a2d;
+  --muted: #5a6b6f;
+  --line: #d8e0e1;
+  --accent: #1d5e6b;
+  --accent-ink: #ffffff;
+  --accent-soft: #e0eef0;
+  --warn: #8a5300;
+  --warn-soft: #fbefd9;
+  --danger: #a3261f;
+  --danger-soft: #fbe5e2;
+  --ok: #1f6b3a;
+  --ok-soft: #e1f2e6;
+  --font: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1819;
+    --surface: #162325;
+    --fg: #e5eeef;
+    --muted: #95a8ab;
+    --line: #2a3c3f;
+    --accent: #6cc1cf;
+    --accent-ink: #081a1d;
+    --accent-soft: #1b3a40;
+    --warn: #f0b04d;
+    --warn-soft: #3a2c10;
+    --danger: #ff8b82;
+    --danger-soft: #3c1b19;
+    --ok: #6fd08f;
+    --ok-soft: #17301f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1819;
+  --surface: #162325;
+  --fg: #e5eeef;
+  --muted: #95a8ab;
+  --line: #2a3c3f;
+  --accent: #6cc1cf;
+  --accent-ink: #081a1d;
+  --accent-soft: #1b3a40;
+  --warn: #f0b04d;
+  --warn-soft: #3a2c10;
+  --danger: #ff8b82;
+  --danger-soft: #3c1b19;
+  --ok: #6fd08f;
+  --ok-soft: #17301f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button, select, input { font: inherit; color: inherit; }
+
+.top { display: flex; flex-wrap: wrap; gap: 16px 24px; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+.top h1 { margin: 0 0 4px; font-size: 28px; line-height: 1.15; font-weight: 600; text-wrap: balance; }
+.top .lead { margin: 0; color: var(--muted); max-width: 60ch; }
+.eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  height: 36px; padding: 0 14px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--surface); cursor: pointer; font-weight: 500;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primario { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.banner { margin: 0 0 16px; padding: 10px 14px; border-radius: 6px; background: var(--accent-soft); color: var(--fg); font-size: 14px; }
+
+.layout { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; min-width: 0; }
+
+/* Formulario */
+.bloque + .bloque { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.bloque h2 { margin: 0 0 12px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.campos { display: grid; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field[hidden] { display: none; }
+.field label { font-size: 13px; font-weight: 500; }
+.field small { color: var(--muted); font-size: 12px; }
+.field select, .field input {
+  height: 36px; width: 100%; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--bg); min-width: 0;
+}
+.field select:hover, .field input:hover { border-color: var(--muted); }
+
+/* Resultado */
+.result { display: flex; flex-direction: column; gap: 22px; }
+.titular { padding: 16px 18px; border-radius: 8px; background: var(--accent-soft); }
+.titular h2 { margin: 0 0 4px; font-size: 22px; line-height: 1.25; font-weight: 600; text-wrap: balance; }
+.titular p { margin: 0; }
+.titular .eyebrow { color: var(--muted); }
+.titular.t-accion { background: var(--ok-soft); }
+.titular.t-alerta { background: var(--danger-soft); }
+.titular.t-aviso { background: var(--warn-soft); }
+
+.avisos { padding: 12px 16px; border-radius: 8px; background: var(--warn-soft); }
+.avisos h3 { margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--warn); }
+.avisos ul { margin: 0; padding-left: 18px; }
+
+.grupo h3 { margin: 0 0 4px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.nota { margin: 0 0 4px; color: var(--muted); font-size: 14px; }
+.pautas { list-style: none; margin: 0; padding: 0; }
+.pauta { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+.pauta:first-child { border-top: 0; }
+.rid { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 3px; }
+.cuerpo { min-width: 0; }
+.cuerpo p { margin: 0; text-wrap: pretty; }
+.pauta.n-info .cuerpo p { color: var(--muted); }
+.pauta.n-alerta .cuerpo p { color: var(--danger); font-weight: 500; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; line-height: 20px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
+.chip.fecha { background: var(--accent-soft); border-color: transparent; color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+.chip.venc { background: var(--danger-soft); border-color: transparent; color: var(--danger); font-weight: 500; font-variant-numeric: tabular-nums; }
+.chip.o-pi, .chip.o-sis { background: var(--warn-soft); border-color: transparent; color: var(--warn); }
+.chip.o-juicio { background: transparent; border-style: dashed; color: var(--fg); }
+.detalle { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+.detalle li { margin: 2px 0; }
+
+.fechas { list-style: none; margin: 0; padding: 0; }
+.fechas li { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); align-items: baseline; }
+.fechas li:first-child { border-top: 0; }
+.fechas time { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.fechas li.venc time { color: var(--danger); font-weight: 500; }
+
+.copiar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+#copiado { color: var(--muted); font-size: 13px; }
+#manual { width: 100%; min-height: 140px; margin-top: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); font-family: var(--mono); font-size: 12px; }
+
+.pie { margin-top: 24px; color: var(--muted); font-size: 13px; max-width: 80ch; }
+.pie p { margin: 0 0 6px; }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .top h1 { font-size: 24px; }
+  .panel { padding: 14px; }
+  .fechas li { grid-template-columns: 84px minmax(0, 1fr); }
+  .fechas li .rid { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn { transition: border-color .15s ease; }
+}
+
+.barra { display: none; }
+@media (max-width: 860px) {
+  .app { padding-bottom: 88px; }
+  .barra {
+    display: flex; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    padding-top: 8px; padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background: var(--surface); border-top: 1px solid var(--line);
+  }
+  .barra .btn { flex: 1; height: 42px; }
+}
+.result, #pautas { display: flex; flex-direction: column; gap: 22px; }
+
+</style>
+
+<div class="app">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Guía no oficial · Instrucción 1/2025</p>
+      <h1>Pautas de caso</h1>
+      <p class="lead">Marca los datos del caso, sin datos personales, y la página te indica qué actuaciones y plazos señala la Instrucción.</p>
+    </div>
+    <div class="acciones">
+      <button type="button" class="btn" id="btnEjemplo">Cargar ejemplo</button>
+      <button type="button" class="btn" id="btnLimpiar">Limpiar</button>
+    </div>
+  </header>
+
+  <p class="banner" id="banner" hidden>Ejemplo cargado: caso de Especial Relevancia del 6 de junio de 2026, en riesgo Bajo desde hace un mes y sin medidas judiciales. Cambia cualquier dato y las pautas se recalculan.</p>
+
+  <main class="layout">
+    <form id="form" class="panel" autocomplete="off"></form>
+    <section class="panel result" id="resultado" aria-live="polite">
+      <div id="pautas"></div>
+      <div class="copiar">
+        <button type="button" class="btn primario" id="btnCopiar">Copiar pautas</button>
+        <span id="copiado" hidden></span>
+      </div>
+      <textarea id="manual" hidden readonly aria-label="Texto de las pautas para copiar"></textarea>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>Guía de consulta no oficial, elaborada a partir de la Instrucción 1/2025 de la Secretaría de Estado de Seguridad. No pertenece al Ministerio del Interior ni a ningún cuerpo policial. No sustituye a la Instrucción ni al criterio del personal policial, que adopta la decisión final.</p>
+    <p>No introduzcas datos personales. La página no guarda ni envía nada: todo se calcula en tu navegador.</p>
+    <p>Los plazos se calculan con las fechas que introduces. Compruébalos con el texto de la Instrucción antes de actuar.</p>
+  </footer>
+</div>
+
+<nav class="barra" aria-label="Ir a una sección">
+  <button type="button" class="btn" id="irDatos">Datos</button>
+  <button type="button" class="btn primario" id="irPautas">Ver pautas</button>
+</nav>
+
+<script>
+/* Motor de reglas: recibe los datos del formulario y devuelve las pautas.
+   Cada regla lleva el mismo identificador (A1, B5, C1...) que la tabla de reglas del documento. */
+var Engine = (function () {
+  var ALTOS = ['Medio', 'Alto', 'Extremo'];
+
+  function D(s) {
+    if (!s) return null;
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if (!m) return null;
+    return new Date(+m[1], +m[2] - 1, +m[3], 12);
+  }
+  function p2(n) { return (n < 10 ? '0' : '') + n; }
+  function fmt(d) { return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear(); }
+  function addDays(d, n) { var x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
+  function addMonths(d, n) {
+    var x = new Date(d.getFullYear(), d.getMonth() + n, 1, 12);
+    var last = new Date(x.getFullYear(), x.getMonth() + 1, 0).getDate();
+    x.setDate(Math.min(d.getDate(), last));
+    return x;
+  }
+  function diffDays(a, b) { return Math.round((a.getTime() - b.getTime()) / 86400000); }
+
+  function evaluar(s) {
+    var r = { titular: null, grupos: [], avisos: [], calendario: [] };
+    var hoy = D(s.fConsulta);
+    if (!hoy) {
+      r.titular = { titulo: 'Falta la fecha de la consulta', detalle: 'Indica la fecha de hoy, o la fecha desde la que quieres calcular los plazos.', tono: 'aviso' };
+      return r;
+    }
+    var sit = s.situacion, riesgo = s.riesgo;
+
+    var falta = [];
+    if (!sit) falta.push('la situación del caso');
+    if (!riesgo) falta.push('el nivel de riesgo');
+    if (!s.medidas) falta.push('si hay medidas judiciales en vigor');
+    if (sit && sit !== 'Inactivo') {
+      if (!s.tipoVal) falta.push('el tipo de la última valoración');
+      if (!s.fVal) falta.push('la fecha de la última valoración');
+    }
+    if (falta.length) {
+      var lista = falta.length > 1 ? falta.slice(0, -1).join(', ') + ' y ' + falta[falta.length - 1] : falta[0];
+      r.titular = { titulo: 'Faltan datos para dar pautas', detalle: 'Completa ' + lista + '.', tono: 'aviso' };
+      return r;
+    }
+
+    var medidas = s.medidas === 'SI';
+    var isVPR = s.tipoVal === 'VPR';
+    var fVal = D(s.fVal), fSit = D(s.fSituacion);
+    var ER = s.er === 'SI', MEN = s.men === 'SI', AGR = s.agr === 'SI';
+    var nuevaDen = s.nuevaDen === 'SI';
+    var riesgoAlto = ALTOS.indexOf(riesgo) >= 0;
+
+    function mk(titulo, nota) { return { titulo: titulo, nota: nota || '', items: [] }; }
+    var gA = mk('Primera VPER tras la VPR');
+    var gB = mk('Plazo de la siguiente VPER');
+    var gC = mk('Supervisión');
+    var gE = mk('Inactivación');
+    var gF = mk('Nueva denuncia o quebrantamiento');
+    var gG = mk('Alta complejidad');
+
+    function add(g, rid, texto, o) {
+      o = o || {};
+      var x = {
+        rid: rid, texto: texto, detalle: o.detalle || [], apartado: o.apartado || '',
+        origen: o.origen || [], fecha: o.fecha || null, fecha2: o.fecha2 || null,
+        modo: o.modo || '', nivel: o.nivel || 'accion', cal: o.cal || '',
+        vencido: false, faltan: null
+      };
+      var lim = x.modo === 'entre' ? x.fecha2 : x.fecha;
+      if (lim && (x.modo === 'antes' || x.modo === 'entre')) {
+        x.faltan = diffDays(lim, hoy);
+        x.vencido = x.faltan < 0;
+      }
+      g.items.push(x);
+      if (x.fecha && x.nivel === 'accion') {
+        r.calendario.push({ fecha: lim || x.fecha, texto: x.cal || x.texto, rid: rid, modo: x.modo, vencido: x.vencido });
+      }
+      return x;
+    }
+
+    /* ---- Criterios de supervisión (7.4.1) ---- */
+    var lim12 = addMonths(hoy, -12);
+    var fER = D(s.fER), fMEN = D(s.fMen);
+    var criterios = [];
+    if (ER) {
+      if (!fER) {
+        r.avisos.push('Falta la fecha de Especial Relevancia: se da por vigente en el último año.');
+        criterios.push('Especial Relevancia en el último año');
+      } else if (fER >= lim12 && fER <= hoy) {
+        criterios.push('Especial Relevancia en el último año (hasta el ' + fmt(addMonths(fER, 12)) + ')');
+      }
+    }
+    if (MEN) {
+      if (!fMEN) {
+        r.avisos.push('Falta la fecha de Menores en Riesgo: se da por vigente en el último año.');
+        criterios.push('Menores en Riesgo en el último año');
+      } else if (fMEN >= lim12 && fMEN <= hoy) {
+        criterios.push('Menores en Riesgo en el último año (hasta el ' + fmt(addMonths(fMEN, 12)) + ')');
+      }
+    }
+    if (ALTOS.indexOf(s.previas) >= 0) criterios.push('Riesgo ' + s.previas + ' en los últimos 3 meses');
+    if (s.denPost !== null && s.denPost !== undefined && s.denPost >= 2) criterios.push('2 o más denuncias posteriores en los 6 primeros meses');
+
+    if (sit === 'Activo' && !riesgoAlto && !medidas && !s.previas) {
+      r.avisos.push('No has indicado las VPER anteriores de los últimos 3 meses: ese criterio de supervisión no se ha podido comprobar.');
+    }
+
+    var supervisionHip = (sit === 'Activo' && !riesgoAlto && !medidas && criterios.length > 0 && !nuevaDen);
+    /* Un caso con medidas judiciales en vigor, o en riesgo Medio, Alto o Extremo, no puede estar Supervisado (7) */
+    var incoherente = (sit === 'Supervisado' && (medidas || riesgoAlto));
+
+    /* Ilocalización (7.2.1): se calcula antes porque, si vence, sustituye a la inactivación ordinaria */
+    var fI = (s.iloc === 'SI' && sit !== 'Inactivo') ? D(s.fIloc) : null;
+    var f3m = fI ? addMonths(fI, 3) : null;
+    var inactivaExc = !!(f3m && hoy >= f3m);
+
+    /* ---- A. Primera VPER tras la VPR ---- */
+    if (isVPR && sit !== 'Inactivo') {
+      gA.nota = 'La VPR va aparejada a la primera entrevista con la mujer.';
+      var f15 = addDays(fVal, 15), f7 = addDays(fVal, 7);
+      if (riesgoAlto && !ER) {
+        add(gA, 'A1', 'Hacer la primera VPER cuando se resuelva la primera actuación judicial sobre la orden de protección, y como máximo a los 15 días de la VPR.',
+          { fecha: f15, modo: 'antes', apartado: '4.3', cal: 'Primera VPER (máximo 15 días desde la VPR)' });
+      }
+      if (riesgoAlto && ER && riesgo !== 'Extremo') {
+        add(gA, 'A3', 'Hacer la primera VPER al menos 7 días después de la VPR (a partir del 8.º día) y como máximo a los 15 días.',
+          { fecha: f7, fecha2: f15, modo: 'entre', apartado: '4.5 y 4.3', cal: 'Primera VPER (ventana de 7 a 15 días desde la VPR)' });
+      }
+      if (riesgo === 'Extremo' && ER) {
+        add(gA, 'A4', 'La primera VPER puede adelantarse, a juicio del policía especializado, una vez controladas las condiciones de riesgo (por ejemplo, la detención del autor).',
+          { origen: ['JUICIO'], apartado: '4.5', nivel: 'info' });
+      }
+      if (riesgo === 'Bajo') {
+        if (medidas || (s.actJud === 'SI' && s.medConc === 'SI')) {
+          add(gA, 'A2', 'Riesgo Bajo con medidas u orden de protección: hacer la primera VPER cuando se resuelva la primera actuación judicial, y como máximo a los 15 días de la VPR.',
+            { fecha: f15, modo: 'antes', apartado: '4.4', cal: 'Primera VPER (máximo 15 días desde la VPR)' });
+        } else if (!criterios.length) {
+          add(gA, 'A5', 'Con riesgo Bajo y sin medidas judiciales, la Instrucción no exige una primera VPER tras la VPR.',
+            { apartado: '4.3 y 4.4', nivel: 'info' });
+        }
+      }
+    }
+
+    /* ---- B. Plazo de la siguiente VPER ---- */
+    if (sit !== 'Inactivo' && !supervisionHip && !(sit === 'Supervisado' && nuevaDen) && (!isVPR || sit === 'Supervisado')) {
+      var supBase = (sit === 'Supervisado' && !incoherente && fSit && fSit > fVal);
+      var baseV = supBase ? fSit : fVal;
+      var cfg = riesgo === 'Extremo' ? { d: 3, t: '72 horas', id: 'B1' }
+        : riesgo === 'Alto' ? { d: 7, t: '7 días', id: 'B2' }
+        : riesgo === 'Medio' ? { d: 30, t: '30 días', id: 'B3' }
+        : medidas ? { d: 60, t: '60 días', id: 'B4' } : { d: 90, t: '90 días', id: 'B5' };
+      add(gB, cfg.id, 'Hacer la siguiente VPER antes de ' + cfg.t + '.',
+        { fecha: addDays(baseV, cfg.d), modo: 'antes', apartado: '6.1', cal: 'Siguiente VPER',
+          detalle: ['Riesgo ' + riesgo + (riesgo === 'Bajo' ? (medidas ? ' con medidas judiciales' : ' sin medidas judiciales') : '') + '. Se cuenta desde ' + (supBase ? 'el día en que se supervisó el caso' : 'la última valoración') + ' (' + fmt(baseV) + ').'] });
+    }
+
+    /* ---- C/D. Supervisión ---- */
+    function planSup(base, hip) {
+      var f3 = addMonths(base, 3), f6 = addMonths(base, 6), f9 = addMonths(base, 9);
+      if (ER) {
+        if (hip) {
+          add(gC, 'D2', 'En esa VPER, hacer una entrevista personal con la víctima.',
+            { fecha: base, modo: 'dia', apartado: '7.4.2', cal: 'VPER y entrevista personal con la víctima' });
+        } else {
+          add(gC, 'D2', 'La primera VPER de la supervisión (' + fmt(base) + ') exigía una entrevista personal con la víctima.',
+            { apartado: '7.4.2', nivel: 'info' });
+        }
+        add(gC, 'D2', 'A los 3 meses, hacer una nueva VPER y un contacto con el denunciado para valorar si supone un riesgo para la víctima, salvo que sea imposible o desaconsejable (anotarlo en VioGén-2).',
+          { fecha: f3, modo: 'dia', apartado: '7.4.2', cal: 'VPER y contacto con el denunciado' });
+        var det = ['Primera prórroga hasta el ' + fmt(f6) + ', ligada al criterio del último año.',
+          'Segunda prórroga hasta el ' + fmt(f9) + ', solo a juicio del personal especializado.'];
+        if (fER) det.push('El criterio de Especial Relevancia en el último año se mantiene hasta el ' + fmt(addMonths(fER, 12)) + '.');
+        add(gC, 'D3', 'Prórrogas: hasta dos periodos de 3 meses.',
+          { origen: ['JUICIO'], apartado: '7.4.2', nivel: 'info', detalle: det });
+      } else {
+        add(gC, 'D1', 'Periodo mínimo de supervisión de 3 meses. Pasado ese plazo, el personal policial especializado puede prorrogarlo otros 3 meses.',
+          { fecha: f3, modo: 'dia', origen: ['JUICIO'], apartado: '7.4.2', cal: 'Fin del periodo mínimo de supervisión',
+            detalle: ['Prórroga posible hasta el ' + fmt(f6) + ', según la evolución del caso u otras circunstancias.'] });
+      }
+      if (hip) {
+        add(gC, 'B5', 'Hacer la siguiente VPER antes de 90 días.',
+          { fecha: addDays(base, 90), modo: 'antes', apartado: '6.1', cal: 'Siguiente VPER',
+            detalle: ['Riesgo Bajo sin medidas judiciales. Se cuenta desde el día en que se supervisa el caso (' + fmt(base) + ').'] });
+      }
+      add(gC, 'D4', 'Aplicar las medidas de protección que correspondan al nivel de riesgo de cada momento.',
+        { apartado: '7.4.2 y Anexo II', nivel: 'info' });
+      add(gC, 'D5', 'Actuaciones complementarias: recoger información del entorno de la víctima y del agresor y de los servicios de apoyo, actualizar la situación legal y psicosocial del denunciado y fomentar la coordinación entre instituciones.',
+        { apartado: '7.4.3', nivel: 'info' });
+      add(gC, 'D6', 'Si hay una nueva denuncia durante la supervisión, el caso pasa a Activo y se hace una nueva VPR.',
+        { apartado: '7.4.2 y 4.2', nivel: 'info' });
+      add(gE, 'E3', 'Para inactivar al terminar el periodo: VPER con riesgo Bajo y entrevista previa con la víctima. Si no se puede hacer la entrevista, anotarlo en VioGén-2.',
+        { fecha: f3, modo: 'desde', apartado: '7.4.2', cal: 'Primera fecha posible para inactivar' });
+      return { f3: f3, f6: f6, f9: f9 };
+    }
+
+    var plan = null;
+    if (sit === 'Activo') {
+      if (riesgoAlto || medidas) {
+        if (criterios.length) {
+          add(gC, 'C2', 'Cumple criterio de supervisión (' + criterios.join('; ') + '), pero mientras haya medidas judiciales en vigor o riesgo Medio, Alto o Extremo el caso sigue Activo. La supervisión se aplicará cuando no haya medidas y el riesgo sea Bajo.',
+            { apartado: '7 y 7.4.1', nivel: 'info' });
+        }
+      } else if (supervisionHip) {
+        add(gC, 'C1', 'Pasar el caso a Supervisado y hacer una VPER ese mismo día. No se inactiva directamente.',
+          { fecha: hoy, modo: 'dia', apartado: '7.4.1 y 7.4.2', cal: 'Pasar a Supervisado y hacer VPER',
+            detalle: criterios.map(function (c) { return 'Criterio: ' + c + '.'; }) });
+        plan = planSup(hoy, true);
+      }
+    } else if (sit === 'Supervisado') {
+      if (incoherente) {
+        add(gE, 'E6', 'Con medidas judiciales en vigor, o con riesgo Medio, Alto o Extremo, el caso no se supervisa ni se inactiva: debe estar Activo, con las medidas del nivel de riesgo y el PSP. La supervisión solo se aplica en riesgo Bajo y sin medidas judiciales.',
+          { apartado: '7 y 7.1', nivel: 'alerta' });
+      } else if (nuevaDen) {
+        add(gF, 'D6', 'Nueva denuncia o quebrantamiento durante la supervisión: el caso pasa a Activo. Hacer una nueva VPR e informar a la Autoridad Judicial y Fiscal.',
+          { apartado: '7.4.2 y 4.2', nivel: 'alerta' });
+      } else {
+        var baseS = fSit;
+        if (!baseS) {
+          r.avisos.push('Falta la fecha de la situación (día en que se supervisó el caso): los plazos de supervisión se han calculado desde la fecha de la consulta.');
+          baseS = hoy;
+        }
+        plan = planSup(baseS, false);
+      }
+    }
+
+    /* ---- E. Inactivación ---- */
+    if (sit === 'Activo' && !inactivaExc) {
+      if (riesgoAlto || medidas) {
+        add(gE, 'E6', 'No inactivar: el caso permanece Activo con las medidas del nivel de riesgo y el PSP.',
+          { apartado: '7 y 7.1', nivel: 'info' });
+      } else if (!criterios.length) {
+        add(gE, 'E1', 'Se puede inactivar si se cumplen los requisitos del apartado 7.1 y la persona evaluadora lo considera oportuno.',
+          { origen: ['JUICIO'], apartado: '7.1',
+            detalle: ['Al menos un contacto con la víctima, preferentemente presencial.',
+              'Reevaluación del riesgo tras la primera actuación judicial en la que no se concedió orden de protección.',
+              'A juicio de la persona evaluadora, que no haya condiciones objetivas para una nueva agresión.',
+              'Dejar constancia de estas acciones para que se pueda seguir su trazabilidad.'] });
+      }
+    }
+
+    if (s.iloc === 'SI' && sit !== 'Inactivo') {
+      if (!fI) {
+        r.avisos.push('Falta la fecha del último contacto con la víctima.');
+      } else {
+        if (inactivaExc) {
+          add(gE, 'E4', 'Han pasado 3 meses desde el último contacto con la víctima sin lograr localizarla: procede la inactivación excepcional, con independencia del nivel de riesgo.',
+            { fecha: f3m, modo: 'dia', apartado: '7.2.1', nivel: 'alerta', cal: 'Se cumplieron 3 meses sin localizar a la víctima',
+              detalle: ['Dar cuenta a la Policía Judicial para que continúe las gestiones de localización.',
+                'Generar el oficio a la Autoridad Judicial y Fiscal.',
+                'Anotar en VioGén-2 las causas de la inactivación y las actuaciones realizadas.'] });
+        } else {
+          add(gE, 'E5', 'Seguir las gestiones para localizar a la víctima y registrar lo actuado en VioGén-2. A los 3 meses del último contacto procede la inactivación excepcional.',
+            { fecha: f3m, modo: 'dia', apartado: '7.2.1', cal: 'Se cumplen 3 meses sin localizar a la víctima' });
+        }
+      }
+    }
+
+    /* ---- F. Nueva denuncia o quebrantamiento ---- */
+    if (nuevaDen) {
+      if (sit === 'Inactivo') {
+        add(gF, 'F1', 'Reactivar el caso con una nueva VPR e informar a la Autoridad Judicial y Fiscal. Extremar las medidas de protección y actualizar el PSP.',
+          { apartado: '7.3.1', nivel: 'alerta' });
+      } else if (sit === 'Activo') {
+        add(gF, 'F1', 'Nueva denuncia o quebrantamiento de una medida: hacer una nueva VPR e informar a la Autoridad Judicial y Fiscal.',
+          { apartado: '4.2', nivel: 'alerta' });
+      }
+    }
+
+    /* ---- G. Alta complejidad ---- */
+    if (sit !== 'Inactivo') {
+      if (ER) {
+        add(gG, 'G1', 'Comunicar a la víctima, de forma clara, su nivel de riesgo, los indicadores más relevantes, los escenarios de inseguridad y los riesgos a los que se enfrenta.',
+          { apartado: '8.A y 5.4', detalle: ['El Sistema genera una diligencia automatizada dirigida a la Autoridad Judicial y Fiscal.'] });
+      }
+      if (MEN) {
+        add(gG, 'G2', 'Actuar para detectar y proteger a los menores.',
+          { apartado: '8.B',
+            detalle: ['Pedir información en el ámbito educativo, servicios sociales y sanitario.',
+              'Comunicar a la Autoridad Judicial y Fiscalía los indicios delictivos.',
+              'Explicar a la víctima el riesgo que supone la violencia para los menores.',
+              'Adoptar medidas de protección para los menores (Anexo II).'] });
+      }
+      if (AGR) {
+        add(gG, 'G3', 'Comunicar al denunciado que su caso está bajo control policial y que se podrá comunicar a otras víctimas.',
+          { origen: ['JUICIO'], apartado: '8.C',
+            detalle: ['Extremar el cumplimiento de las medidas judiciales.',
+              'Actualizar datos a través del centro penitenciario si está vinculado con otras víctimas.',
+              'Valorar la comunicación a la víctima de las denuncias previas solo si se cumplen todos los criterios (C.2).'] });
+      }
+      if (AGR && ER) {
+        add(gG, 'G4', 'Hacer una VPER a las otras víctimas Activas del mismo denunciado y contactar con las que pasaron a Inactivo hace menos de 90 días.',
+          { apartado: '8.C' });
+      }
+    }
+
+    /* ---- Titular ---- */
+    var tit;
+    if (sit === 'Inactivo') {
+      tit = nuevaDen
+        ? { titulo: 'Reactivar el caso', detalle: 'Nueva denuncia o quebrantamiento sobre un caso Inactivo: hace falta una nueva VPR (7.3.1).', tono: 'alerta' }
+        : { titulo: 'Caso Inactivo', detalle: 'No requiere control policial directo. Se reactiva si hay una nueva denuncia o un quebrantamiento de una medida.', tono: 'info' };
+    } else if (sit === 'Supervisado') {
+      if (incoherente) {
+        tit = { titulo: 'Con estos datos el caso debe estar Activo, no Supervisado', detalle: 'Con medidas judiciales en vigor, o con riesgo Medio, Alto o Extremo, no se supervisa ni se inactiva (7). Revisa la situación del caso.', tono: 'alerta' };
+      } else if (nuevaDen) {
+        tit = { titulo: 'Pasa a Activo: nueva VPR', detalle: 'Una nueva denuncia durante la supervisión devuelve el caso a Activo (7.4.2).', tono: 'alerta' };
+      } else {
+        tit = { titulo: 'Caso Supervisado' + (fSit ? ' desde el ' + fmt(fSit) : ''),
+          detalle: 'Periodo mínimo hasta el ' + fmt(plan.f3) + '. ' + (ER ? 'Por ser de Especial Relevancia: VPER y contacto con el denunciado a los 3 meses.' : 'La prórroga es potestad del personal policial especializado.'),
+          tono: 'info' };
+      }
+    } else if (supervisionHip) {
+      tit = { titulo: 'Pasar el caso a Supervisado', detalle: 'Cumple el criterio de supervisión: ' + criterios.join('; ') + '. No se inactiva directamente.', tono: 'accion' };
+    } else if (riesgoAlto || medidas) {
+      tit = { titulo: 'Caso Activo: no procede inactivar', detalle: 'Hay riesgo Medio, Alto o Extremo, o medidas judiciales en vigor. Seguir con las medidas del nivel de riesgo.', tono: 'info' };
+    } else {
+      tit = { titulo: 'Se puede valorar la inactivación', detalle: 'Riesgo Bajo, sin medidas judiciales y sin criterios de supervisión: se puede inactivar si se cumplen los requisitos del apartado 7.1.', tono: 'accion' };
+    }
+    if (inactivaExc) {
+      tit = { titulo: 'Procede la inactivación excepcional por ilocalización', detalle: 'Han pasado 3 meses desde el último contacto con la víctima (' + fmt(fI) + '), con independencia del nivel de riesgo (7.2.1).', tono: 'accion' };
+    }
+    r.titular = tit;
+
+    r.grupos = [gA, gB, gC, gE, gF, gG].filter(function (g) { return g.items.length > 0; });
+    r.calendario.sort(function (a, b) { return a.fecha - b.fecha; });
+    return r;
+  }
+
+  return { evaluar: evaluar, fmt: fmt, D: D, addDays: addDays, addMonths: addMonths, diffDays: diffDays };
+})();
+
+
+</script>
+<script>
+document.getElementById('form').addEventListener('submit', function (e) { e.preventDefault(); });
+/* Interfaz: dibuja el formulario, lee los datos y pinta las pautas que devuelve el motor. */
+(function () {
+  var SINO = ['SI', 'NO'];
+  var RIESGO = ['Bajo', 'Medio', 'Alto', 'Extremo'];
+
+  var BLOQUES = [
+    { t: 'Datos del caso', f: [
+      { id: 'fConsulta', label: 'Fecha de la consulta', hint: 'Hoy por defecto. Cámbiala para simular otro día.', type: 'date' },
+      { id: 'alta', label: 'Fecha de alta del caso', type: 'date' },
+      { id: 'situacion', label: 'Situación', type: 'select', opts: ['Activo', 'Supervisado', 'Inactivo'] },
+      { id: 'fSituacion', label: 'Fecha de la situación', hint: 'Si es Supervisado: día en que se supervisó el caso.', type: 'date' },
+      { id: 'medidas', label: 'Medidas judiciales en vigor', type: 'select', opts: SINO }
+    ] },
+    { t: 'Valoración', f: [
+      { id: 'tipoVal', label: 'Última valoración', type: 'select', opts: ['VPR', 'VPER'] },
+      { id: 'fVal', label: 'Fecha de la última valoración', type: 'date' },
+      { id: 'riesgo', label: 'Nivel de riesgo', type: 'select', opts: RIESGO },
+      { id: 'previas', label: 'VPER anteriores (3 meses): nivel más alto', type: 'select', opts: ['Ninguna'].concat(RIESGO) },
+      { id: 'actJud', label: 'Primera actuación judicial realizada', type: 'select', opts: SINO, show: function (s) { return s.tipoVal === 'VPR'; } },
+      { id: 'fActJud', label: 'Fecha de la primera actuación judicial', type: 'date', show: function (s) { return s.tipoVal === 'VPR' && s.actJud === 'SI'; } },
+      { id: 'medConc', label: 'Medidas u orden de protección concedidas', type: 'select', opts: SINO, show: function (s) { return s.tipoVal === 'VPR' && s.actJud === 'SI'; } }
+    ] },
+    { t: 'Alta complejidad', f: [
+      { id: 'er', label: 'Especial Relevancia', type: 'select', opts: SINO },
+      { id: 'fER', label: 'Fecha de Especial Relevancia', hint: 'La última vez que se evaluó así.', type: 'date', show: function (s) { return s.er === 'SI'; } },
+      { id: 'men', label: 'Menores en Riesgo', type: 'select', opts: SINO },
+      { id: 'fMen', label: 'Fecha de Menores en Riesgo', hint: 'La última vez que se evaluó así.', type: 'date', show: function (s) { return s.men === 'SI'; } },
+      { id: 'agr', label: 'Agresor con denuncias de otras víctimas', type: 'select', opts: SINO }
+    ] },
+    { t: 'Reincidencia', f: [
+      { id: 'fDen', label: 'Fecha de la primera denuncia en el Sistema', type: 'date' },
+      { id: 'denPost', label: 'Denuncias posteriores en los 6 primeros meses', type: 'number' },
+      { id: 'nuevaDen', label: 'Nueva denuncia o quebrantamiento', hint: 'Desde la supervisión o la inactivación.', type: 'select', opts: SINO }
+    ] },
+    { t: 'Ilocalización', f: [
+      { id: 'iloc', label: 'Víctima sin localizar', hint: 'Marca SI si no se ha podido localizar a la víctima.', type: 'select', opts: SINO },
+      { id: 'fIloc', label: 'Fecha del último contacto con la víctima', type: 'date', show: function (s) { return s.iloc === 'SI'; } }
+    ] }
+  ];
+
+  var ORIGEN = { JUICIO: 'A juicio del agente' };
+  var IDS = [];
+  BLOQUES.forEach(function (b) { b.f.forEach(function (f) { IDS.push(f.id); }); });
+
+  function esc(t) {
+    return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function $(id) { return document.getElementById(id); }
+  function p2(n) { return (n < 10 ? '0' : '') + n; }
+  function iso(d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+
+  /* ---------- Formulario ---------- */
+  function fieldHTML(f) {
+    var c;
+    if (f.type === 'select') {
+      c = '<select id="' + f.id + '"><option value="">Elegir…</option>' + f.opts.map(function (o) { return '<option>' + o + '</option>'; }).join('') + '</select>';
+    } else if (f.type === 'date') {
+      c = '<input type="date" id="' + f.id + '">';
+    } else {
+      c = '<input type="number" id="' + f.id + '" min="0" max="99" step="1" inputmode="numeric">';
+    }
+    return '<div class="field" id="w_' + f.id + '"><label for="' + f.id + '">' + esc(f.label) + '</label>' + c + (f.hint ? '<small>' + esc(f.hint) + '</small>' : '') + '</div>';
+  }
+  var form = $('form');
+  form.innerHTML = BLOQUES.map(function (b) {
+    return '<section class="bloque"><h2>' + esc(b.t) + '</h2><div class="campos">' + b.f.map(fieldHTML).join('') + '</div></section>';
+  }).join('');
+
+  function getState() {
+    var s = {};
+    IDS.forEach(function (id) { s[id] = $(id).value; });
+    s.denPost = s.denPost === '' ? null : parseInt(s.denPost, 10);
+    return s;
+  }
+  function setState(o) {
+    IDS.forEach(function (id) { $(id).value = (o[id] !== undefined && o[id] !== null) ? o[id] : ''; });
+  }
+  function toggleFields(s) {
+    BLOQUES.forEach(function (b) {
+      b.f.forEach(function (f) { if (f.show) $('w_' + f.id).hidden = !f.show(s); });
+    });
+  }
+
+  /* ---------- Resultado ---------- */
+  function chipFecha(it) {
+    var f = Engine.fmt, t = '', cls = 'chip fecha';
+    if (it.modo === 'antes') {
+      if (it.vencido) { t = 'Vencido el ' + f(it.fecha) + ' (hace ' + Math.abs(it.faltan) + ' ' + (Math.abs(it.faltan) === 1 ? 'día' : 'días') + ')'; cls = 'chip venc'; }
+      else { t = 'Antes del ' + f(it.fecha) + (it.faltan === 0 ? ' · hoy' : ' · faltan ' + it.faltan + ' ' + (it.faltan === 1 ? 'día' : 'días')); }
+    } else if (it.modo === 'entre') {
+      t = 'Entre el ' + f(it.fecha) + ' y el ' + f(it.fecha2);
+      if (it.vencido) { cls = 'chip venc'; t += ' · vencido'; }
+      else if (it.faltan !== null) t += ' · faltan ' + it.faltan + ' ' + (it.faltan === 1 ? 'día' : 'días');
+    } else if (it.modo === 'desde') {
+      t = 'No antes del ' + f(it.fecha);
+    } else {
+      t = 'El ' + f(it.fecha);
+    }
+    return '<span class="' + cls + '">' + esc(t) + '</span>';
+  }
+
+  function itemHTML(it) {
+    var meta = '';
+    if (it.fecha) meta += chipFecha(it);
+    if (it.apartado) meta += '<span class="chip apt">Instrucción ' + esc(it.apartado) + '</span>';
+    it.origen.forEach(function (o) { meta += '<span class="chip o-' + o.toLowerCase() + '">' + ORIGEN[o] + '</span>'; });
+    var det = it.detalle.length ? '<ul class="detalle">' + it.detalle.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul>' : '';
+    return '<li class="pauta n-' + it.nivel + '"><span class="rid">' + esc(it.rid) + '</span><div class="cuerpo"><p>' + esc(it.texto) + '</p>' + (meta ? '<div class="meta">' + meta + '</div>' : '') + det + '</div></li>';
+  }
+
+  function plainText(res) {
+    var L = [];
+    L.push(res.titular.titulo);
+    if (res.titular.detalle) L.push(res.titular.detalle);
+    res.avisos.forEach(function (a) { L.push('Aviso: ' + a); });
+    res.grupos.forEach(function (g) {
+      L.push('', g.titulo.toUpperCase());
+      g.items.forEach(function (it) {
+        var fe = '';
+        if (it.fecha) {
+          var x = Engine.fmt(it.fecha);
+          fe = it.modo === 'antes' ? ' (antes del ' + x + ')' : it.modo === 'entre' ? ' (entre el ' + x + ' y el ' + Engine.fmt(it.fecha2) + ')' : it.modo === 'desde' ? ' (no antes del ' + x + ')' : ' (' + x + ')';
+        }
+        L.push('- [' + it.rid + '] ' + it.texto + fe + (it.apartado ? ' [Instrucción ' + it.apartado + ']' : ''));
+        it.detalle.forEach(function (d) { L.push('    · ' + d); });
+      });
+    });
+    if (res.calendario.length) {
+      L.push('', 'CALENDARIO');
+      res.calendario.forEach(function (c) { L.push('- ' + Engine.fmt(c.fecha) + ': ' + c.texto); });
+    }
+    L.push('', 'Guía de consulta no oficial. La decisión final corresponde al personal policial.');
+    return L.join('\n');
+  }
+
+  var lastText = '';
+  function paint(res) {
+    var h = '';
+    var t = res.titular;
+    h += '<div class="titular t-' + t.tono + '"><p class="eyebrow">Situación detectada</p><h2>' + esc(t.titulo) + '</h2><p>' + esc(t.detalle) + '</p></div>';
+    if (res.avisos.length) {
+      h += '<div class="avisos"><h3>A tener en cuenta</h3><ul>' + res.avisos.map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('') + '</ul></div>';
+    }
+    res.grupos.forEach(function (g) {
+      h += '<section class="grupo"><h3>' + esc(g.titulo) + '</h3>' + (g.nota ? '<p class="nota">' + esc(g.nota) + '</p>' : '') + '<ol class="pautas">' + g.items.map(itemHTML).join('') + '</ol></section>';
+    });
+    if (res.calendario.length) {
+      h += '<section class="grupo cal"><h3>Calendario</h3><ol class="fechas">' + res.calendario.map(function (c) {
+        return '<li class="' + (c.vencido ? 'venc' : '') + '"><time>' + Engine.fmt(c.fecha) + '</time><span>' + esc(c.texto) + '</span><span class="rid">' + esc(c.rid) + '</span></li>';
+      }).join('') + '</ol></section>';
+    }
+    $('pautas').innerHTML = h;
+    lastText = res.grupos.length ? plainText(res) : '';
+    $('btnCopiar').disabled = !lastText;
+  }
+
+  var ejemploActivo = false;
+  function render() {
+    var s = getState();
+    toggleFields(s);
+    paint(Engine.evaluar(s));
+    $('banner').hidden = !ejemploActivo;
+  }
+
+  /* ---------- Ejemplo, limpiar, copiar ---------- */
+  function hoy12() { var d = new Date(); d.setHours(12, 0, 0, 0); return d; }
+  function ejemplo() {
+    var h = hoy12();
+    setState({
+      fConsulta: iso(h), alta: '2026-06-06', situacion: 'Activo', fSituacion: '2026-06-06', medidas: 'NO',
+      tipoVal: 'VPER', fVal: iso(Engine.addDays(h, -30)), riesgo: 'Bajo', previas: 'Bajo',
+      er: 'SI', fER: '2026-06-06', men: 'NO', agr: 'NO', fDen: '2026-06-06', denPost: '0', nuevaDen: 'NO', iloc: 'NO'
+    });
+    ejemploActivo = true;
+    render();
+  }
+  function limpiar() {
+    setState({ fConsulta: iso(hoy12()) });
+    ejemploActivo = false;
+    render();
+  }
+  function copiar() {
+    if (!lastText) return;
+    var msg = $('copiado');
+    function ok() { msg.textContent = 'Pautas copiadas.'; msg.hidden = false; setTimeout(function () { msg.hidden = true; }, 2500); }
+    function manual() {
+      var ta = $('manual');
+      ta.value = lastText; ta.hidden = false; ta.focus(); ta.select();
+      msg.textContent = 'No se ha podido copiar automáticamente. El texto está seleccionado: cópialo con Ctrl+C.'; msg.hidden = false;
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(lastText).then(ok, manual);
+      } else { manual(); }
+    } catch (e) { manual(); }
+  }
+
+  form.addEventListener('input', function () { ejemploActivo = false; render(); });
+  form.addEventListener('change', function () { ejemploActivo = false; render(); });
+  $('btnEjemplo').addEventListener('click', ejemplo);
+  $('btnLimpiar').addEventListener('click', limpiar);
+  $('btnCopiar').addEventListener('click', copiar);
+
+  $('irDatos').addEventListener('click', function () { $('form').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  $('irPautas').addEventListener('click', function () { $('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+
+  ejemplo();
+})();
+
+</script>
