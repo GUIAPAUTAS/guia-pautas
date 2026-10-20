@@ -285,6 +285,8 @@ var Engine = (function () {
     var gE = mk('Inactivación');
     var gF = mk('Nueva denuncia o quebrantamiento');
     var gG = mk('Alta complejidad');
+    var gH = mk('Cambio de domicilio', 'La Instrucción no detalla los pasos dentro del Sistema; estas son las obligaciones que establece.');
+    var gI = mk('Renuncia de la víctima a su protección');
 
     function add(g, rid, texto, o) {
       o = o || {};
@@ -474,10 +476,10 @@ var Engine = (function () {
           add(gE, 'E4', 'Han pasado 3 meses desde el último contacto con la víctima sin lograr localizarla: procede la inactivación excepcional, con independencia del nivel de riesgo.',
             { fecha: f3m, modo: 'dia', apartado: '7.2.1', nivel: 'alerta', cal: 'Se cumplieron 3 meses sin localizar a la víctima',
               detalle: ['Dar cuenta a la Policía Judicial para que continúe las gestiones de localización.',
-                'Generar el oficio a la Autoridad Judicial y Fiscal.',
+                'Hacer el informe (oficio) sobre la imposibilidad de proteger a la víctima y comunicarlo al Juzgado y al Ministerio Fiscal. El Sistema genera un documento editable.',
                 'Anotar en VioGén-2 las causas de la inactivación y las actuaciones realizadas.'] });
         } else {
-          add(gE, 'E5', 'Seguir las gestiones para localizar a la víctima y registrar lo actuado en VioGén-2. A los 3 meses del último contacto procede la inactivación excepcional.',
+          add(gE, 'E5', 'Seguir las gestiones para localizar a la víctima y registrar lo actuado en VioGén-2. A los 3 meses del último contacto procede la inactivación excepcional. Entonces habrá que hacer el informe y comunicarlo al Juzgado y al Ministerio Fiscal.',
             { fecha: f3m, modo: 'dia', apartado: '7.2.1', cal: 'Se cumplen 3 meses sin localizar a la víctima' });
         }
       }
@@ -521,6 +523,41 @@ var Engine = (function () {
       }
     }
 
+    /* ---- I. Renuncia de la víctima a su protección (7.2.2 y 8.D) ---- */
+    var puedeRenuncia = (riesgo === 'Bajo' || riesgo === 'Medio') && !medidas;
+    var renunciaOk = (s.renuncia === 'SI' && sit !== 'Inactivo' && puedeRenuncia);
+    if (s.renuncia === 'SI' && sit !== 'Inactivo' && !puedeRenuncia) {
+      r.avisos.push('La renuncia de la víctima solo permite inactivar con riesgo Bajo o Medio y sin medidas judiciales ni orden de protección en vigor (7.2.2). Con estos datos el caso sigue Activo y se mantiene la protección.');
+    }
+    if (renunciaOk) {
+      add(gI, 'I1', 'Indagar las causas de la renuncia con todos los recursos disponibles, en especial la red de apoyo y auxilio territorial, para intentar mantener las medidas de protección.',
+        { apartado: '7.2.2' });
+      add(gI, 'I2', 'Derivar a la Oficina de Asistencia a Víctimas del Delito (o recurso alternativo) y promover el contacto de Servicios Sociales con la víctima.',
+        { apartado: '8.D' });
+      add(gI, 'I3', 'Informar a la víctima de su nivel de riesgo, de las medidas necesarias para su autoprotección y de que el personal policial sigue a su disposición.',
+        { apartado: '8.D' });
+      add(gI, 'I4', 'Si la renuncia es voluntaria, manifiesta y reiterada, procede inactivar el caso.',
+        { apartado: '7.2.2', nivel: 'alerta',
+          detalle: ['Hacer el oficio (el Sistema genera un documento editable) para informar a la Autoridad Judicial y Fiscal de la imposibilidad de continuar la protección.',
+            'Anotar en VioGén-2 las causas de la inactivación, las actuaciones realizadas y los esfuerzos efectuados, de forma que se pueda seguir su trazabilidad.'] });
+    }
+
+    /* ---- H. Cambio de domicilio (2.4 a 2.7) ---- */
+    if (s.domicilio === 'SI') {
+      add(gH, 'H1', 'Comprobar que la víctima reside en el nuevo domicilio y actualizarlo en VioGén-2 una vez verificado.',
+        { apartado: '2.4 y 2.6',
+          detalle: ['Mientras no esté verificado, se mantiene el último domicilio conocido en el Sistema.',
+            'Con el domicilio sin verificar, el caso no se puede reasignar a otra plantilla distinta de la del último domicilio conocido.'] });
+      add(gH, 'H2', 'Si el nuevo domicilio corresponde a otra unidad o Cuerpo policial, reasignar el caso lo antes posible a través del módulo del Sistema.',
+        { apartado: '2.5',
+          detalle: ['Hacer antes las comprobaciones necesarias, en coordinación con la unidad receptora.',
+            'Confirmar que la unidad receptora continuará el seguimiento del caso y la protección de la víctima.'] });
+      add(gH, 'H3', 'Preguntar a la víctima si desea proteger la información sobre su domicilio en las actuaciones judiciales y, si es así, reflejarlo en las diligencias del atestado.',
+        { apartado: '2.7' });
+      add(gH, 'H4', 'Recomendar a la víctima que facilite un domicilio para notificaciones si el agresor desconoce su domicilio actual.',
+        { apartado: 'Anexo III, apartado 5', nivel: 'info' });
+    }
+
     /* ---- Titular ---- */
     var tit;
     if (sit === 'Inactivo') {
@@ -547,9 +584,12 @@ var Engine = (function () {
     if (inactivaExc) {
       tit = { titulo: 'Procede la inactivación excepcional por ilocalización', detalle: 'Han pasado 3 meses desde el último contacto con la víctima (' + fmt(fI) + '), con independencia del nivel de riesgo (7.2.1).', tono: 'accion' };
     }
+    if (renunciaOk && !incoherente && !inactivaExc) {
+      tit = { titulo: 'Renuncia de la víctima a su protección', detalle: 'Con riesgo ' + riesgo + ' y sin medidas judiciales, si la renuncia es voluntaria, manifiesta y reiterada procede inactivar el caso, tras indagar las causas (7.2.2).', tono: 'accion' };
+    }
     r.titular = tit;
 
-    r.grupos = [gA, gB, gC, gE, gF, gG].filter(function (g) { return g.items.length > 0; });
+    r.grupos = [gA, gB, gC, gE, gI, gF, gG, gH].filter(function (g) { return g.items.length > 0; });
     r.calendario.sort(function (a, b) { return a.fecha - b.fecha; });
     return r;
   }
@@ -598,6 +638,10 @@ document.getElementById('form').addEventListener('submit', function (e) { e.prev
     { t: 'Ilocalización', f: [
       { id: 'iloc', label: 'Víctima sin localizar', hint: 'Marca SI si no se ha podido localizar a la víctima.', type: 'select', opts: SINO },
       { id: 'fIloc', label: 'Fecha del último contacto con la víctima', type: 'date', show: function (s) { return s.iloc === 'SI'; } }
+    ] },
+    { t: 'Otras situaciones', f: [
+      { id: 'domicilio', label: 'Cambio de domicilio de la víctima', hint: 'Marca SI para ver cómo gestionarlo.', type: 'select', opts: SINO },
+      { id: 'renuncia', label: 'La víctima renuncia a su protección', hint: 'Renuncia voluntaria, manifiesta y reiterada. Solo con riesgo Bajo o Medio y sin medidas judiciales.', type: 'select', opts: SINO, show: function (s) { return (s.riesgo === 'Bajo' || s.riesgo === 'Medio') && s.medidas === 'NO' && s.situacion !== 'Inactivo'; } }
     ] }
   ];
 
