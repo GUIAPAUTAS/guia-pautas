@@ -1,5 +1,9 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Guía de pautas VioGén-2</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Diseño: herramienta de consulta. Formulario a la izquierda, pautas a la derecha; en móvil, una columna.
@@ -184,7 +188,10 @@ button, select, input { font: inherit; color: inherit; }
 }
 .result, #pautas { display: flex; flex-direction: column; gap: 22px; }
 
+html, body { margin: 0; }
 </style>
+</head>
+<body>
 
 <div class="app">
   <header class="top">
@@ -285,7 +292,7 @@ var Engine = (function () {
     var gE = mk('Inactivación');
     var gF = mk('Nueva denuncia o quebrantamiento');
     var gG = mk('Alta complejidad');
-    var gH = mk('Cambio de domicilio', 'La Instrucción no detalla los pasos dentro del Sistema; estas son las obligaciones que establece.');
+    var gH = mk('Cambio de domicilio', 'Se modifica la dirección; la reasignación del caso corresponde a los administradores del programa.');
     var gI = mk('Renuncia de la víctima a su protección');
 
     function add(g, rid, texto, o) {
@@ -544,14 +551,12 @@ var Engine = (function () {
 
     /* ---- H. Cambio de domicilio (2.4 a 2.7) ---- */
     if (s.domicilio === 'SI') {
-      add(gH, 'H1', 'Comprobar que la víctima reside en el nuevo domicilio y actualizarlo en VioGén-2 una vez verificado.',
-        { apartado: '2.4 y 2.6',
-          detalle: ['Mientras no esté verificado, se mantiene el último domicilio conocido en el Sistema.',
-            'Con el domicilio sin verificar, el caso no se puede reasignar a otra plantilla distinta de la del último domicilio conocido.'] });
-      add(gH, 'H2', 'Si el nuevo domicilio corresponde a otra unidad o Cuerpo policial, reasignar el caso lo antes posible a través del módulo del Sistema.',
-        { apartado: '2.5',
-          detalle: ['Hacer antes las comprobaciones necesarias, en coordinación con la unidad receptora.',
-            'Confirmar que la unidad receptora continuará el seguimiento del caso y la protección de la víctima.'] });
+      add(gH, 'H1', 'Si el nuevo domicilio pertenece a otra unidad, coordinarse con ella para que compruebe que la víctima vive allí.',
+        { apartado: '2.5 y 2.6',
+          detalle: ['Hasta que la unidad receptora lo compruebe, no se cambia el domicilio en VioGén-2: se mantiene el último domicilio conocido.',
+            'Con el domicilio sin verificar, el caso no se puede reasignar a otra plantilla.'] });
+      add(gH, 'H2', 'Una vez comprobado el nuevo domicilio, modificar solo la dirección en VioGén-2. La reasignación del caso no la hace la unidad.',
+        { detalle: ['La reasignación la realizan los administradores del programa, cuando las dos unidades ya se han coordinado.'] });
       add(gH, 'H3', 'Preguntar a la víctima si desea proteger la información sobre su domicilio en las actuaciones judiciales y, si es así, reflejarlo en las diligencias del atestado.',
         { apartado: '2.7' });
       add(gH, 'H4', 'Recomendar a la víctima que facilite un domicilio para notificaciones si el agresor desconoce su domicilio actual.',
@@ -824,3 +829,5 @@ document.getElementById('form').addEventListener('submit', function (e) { e.prev
 })();
 
 </script>
+</body>
+</html>
